@@ -1,0 +1,27 @@
+module top(
+    input logic clk,
+    input logic reset,
+    output logic hsync,
+    output logic vsync,
+    output logic [7:0] rgb
+);
+
+    // Instantiate image processor
+    image_processor img_proc (
+        .clk(clk),
+        .reset(reset),
+        .x(x), // Provide VGA coordinates
+        .y(y),
+        .vga_data(rgb)
+    );
+
+    // Instantiate VGA controller
+    vga_controller vga_ctrl (
+        .clk(clk),
+        .reset(reset),
+        .hsync(hsync),
+        .vsync(vsync),
+        .rgb(rgb)
+    );
+
+endmodule

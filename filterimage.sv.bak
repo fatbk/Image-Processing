@@ -1,0 +1,39 @@
+module image_processor(
+    input logic clk,
+    input logic reset,
+    input logic [9:0] x, // X coordinate for VGA
+    input logic [9:0] y, // Y coordinate for VGA
+    output logic [7:0] vga_data // VGA pixel data
+);
+
+    // Define memory for storing image data
+    logic [7:0] image_mem [0:63999]; // Adjust size according to your image dimensions
+
+    // Initialize memory with image data from file
+    initial begin
+        $readmemh("image.hex", image_mem);
+    end
+
+    // Median filter parameters
+    // Define a 3x3 filter (adjust size if needed)
+    logic [7:0] window [0:8];
+    
+    // Median filter logic
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            // Handle reset condition if needed
+        end else begin
+            // Collect window pixels
+            // You need to implement the logic to collect pixels from the window
+            // based on current (x, y) position.
+            
+            // Apply median filter algorithm
+            // Sort the window array and get the median value
+            // (Implement sorting and median finding here)
+            
+            // Set VGA output data
+            vga_data = median_value; // Replace `median_value` with the computed median
+        end
+    end
+
+endmodule

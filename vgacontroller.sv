@@ -1,0 +1,61 @@
+module vga_controller (
+    input logic clk,        // 25.175 MHz pixel clock
+    input logic reset,
+    output logic hsync,
+    output logic vsync,
+    output logic [7:0] rgb // RGB data for the VGA
+);
+    // VGA timing constants
+    // 640x480 @ 60Hz
+    localparam H_SYNC_CYCLES = 96;     // Hsync pulse width
+    localparam H_BACK_PORCH = 48;      // Back porch
+    localparam H_ACTIVE_VIDEO = 640;   // Active video
+    localparam H_FRONT_PORCH = 16;     // Front porch
+    localparam H_TOTAL_CYCLES = 800;   // Total horizontal cycles
+
+    localparam V_SYNC_CYCLES = 2;      // Vsync pulse width
+    localparam V_BACK_PORCH = 33;      // Back porch
+    localparam V_ACTIVE_VIDEO = 480;   // Active video
+    localparam V_FRONT_PORCH = 10;     // Front porch
+    localparam V_TOTAL_CYCLES = 525;   // Total vertical cycles
+
+    // Counters for horizontal and vertical synchronization
+    logic [9:0] h_counter;
+    logic [9:0] v_counter;
+
+    // RGB data output
+    logic [7:0] rgb_data;
+
+    // Synchronization signals
+    assign hsync = (h_counter < H_SYNC_CYCLES);
+    assign vsync = (v_counter < V_SYNC_CYCLES);
+
+    // Generate RGB output based on pixel position
+    always_comb begin
+        if (h_counter < H_ACTIVE_VIDEO && v_counter < V_ACTIVE_VIDEO) begin
+            rgb = rgb_data; // Provide the RGB data here
+        end else begin
+            rgb = 8'h00; // Black or background color
+        end
+    end
+
+    // Horizontal and vertical counters
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            h_counter <= 0;
+            v_counter <= 0;
+        end else begin
+            if (h_counter < H_TOTAL_CYCLES - 1) begin
+                h_counter <= h_counter + 1;
+            end else begin
+                h_counter <= 0;
+                if (v_counter < V_TOTAL_CYCLES - 1) begin
+                    v_counter <= v_counter + 1;
+                end else begin
+                    v_counter <= 0;
+                end
+            end
+        end
+    end
+
+endmodule
